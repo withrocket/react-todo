@@ -2,6 +2,8 @@ import * as React from 'react';
 import { Helmet } from 'react-helmet-async';
 import styled from 'styled-components';
 
+import TodoInput from 'app/components/TodoInput';
+
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -29,15 +31,22 @@ const TodoList = styled.div`
   flex-direction: column;
 `;
 
-const TodoItem = styled.div`
+const TodoListItem = styled.div`
   display: flex;
+  flex: 0 0 50px;
+  flex-direction: row;
+  justify-content: flex-start;
   align-items: center;
   width: 100%;
-  padding: 15px 25px;
+  padding: 0px 15px;
   border-bottom: solid 1px #eee;
+  &:hover {
+    background-color: #eee;
+  }
 `;
 
 const TodoCheck = styled.input`
+  flex: 0 0 30px;
   margin-right: 15px;
 `;
 
@@ -51,11 +60,12 @@ export function HomePage() {
       <Wrapper>
         <Box>
           <Title>할 일</Title>
+          <TodoInput></TodoInput>
           <TodoList>
-            <TodoItem>
+            <TodoListItem>
               <TodoCheck type="checkbox"></TodoCheck>
               나는 투두야
-            </TodoItem>
+            </TodoListItem>
           </TodoList>
         </Box>
       </Wrapper>
