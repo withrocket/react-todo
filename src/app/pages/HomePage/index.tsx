@@ -33,6 +33,20 @@ const TodoList = styled.div`
 `;
 
 export function HomePage() {
+  const data: ITodoItem[] = [
+    {
+      id: '1',
+      compoleted: true,
+      content: '투두입니다. 1',
+      editing: false,
+    },
+    {
+      id: '2',
+      compoleted: false,
+      content: '투두입니다. 2',
+      editing: false,
+    },
+  ];
   return (
     <>
       <Helmet>
@@ -44,14 +58,9 @@ export function HomePage() {
           <Title>할 일</Title>
           <TodoInput></TodoInput>
           <TodoList>
-            <TodoItem
-              todo={{
-                id: '1',
-                compoleted: true,
-                content: '투두입니다. 1',
-                editing: false,
-              }}
-            />
+            {data.map(item => (
+              <TodoItem todo={item}></TodoItem>
+            ))}
           </TodoList>
         </Box>
       </Wrapper>
