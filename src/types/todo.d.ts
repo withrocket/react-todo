@@ -4,6 +4,6 @@ interface ITodoItemContent {
 
 interface ITodoItem extends ITodoItemContent {
   id: string;
-  compoleted: boolean;
+  completed: boolean;
   editing: boolean;
 }

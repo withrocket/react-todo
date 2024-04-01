@@ -6,6 +6,7 @@ const Circle = styled.div<{ checked?: boolean }>`
   height: 20px;
   min-width: 20px;
   padding: 3px;
+  cursor: pointer;
   border-radius: 50%;
   border: solid 2px ${props => (props.checked ? 'red' : '#eee')};
 
