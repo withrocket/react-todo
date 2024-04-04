@@ -9,3 +9,8 @@ export const TodoListSelector = createSelector(
   baseSelector,
   state => state.todoList,
 );
+
+export const TodoCountSelector = createSelector(
+  baseSelector,
+  state => state.todoCount,
+);

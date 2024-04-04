@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
 const Box = styled.div<{ isEditing?: boolean }>`
@@ -23,18 +23,23 @@ export default function TodoInput({
   isEditing,
   editContent,
   editTodo,
-  editModeTodo,
 }: {
   addTodo?: (content: string) => void;
   isEditing?: boolean;
   editContent?: string;
   editTodo?: (content: string) => void;
-  editModeTodo?: () => void;
 }) {
   const [content, setContent] = React.useState<string>(editContent || '');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, [isEditing]);
+
   return (
     <Box isEditing={isEditing}>
       <Input
+        ref={inputRef}
         value={content}
         onChange={e => setContent(e.target.value)}
         onBlur={e => {

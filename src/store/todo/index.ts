@@ -1,10 +1,11 @@
 import { PayloadAction, createSlice, nanoid } from '@reduxjs/toolkit';
 import { TodoState } from './types';
 import { useInjectReducer } from 'redux-injectors';
-import { loadTodoData, saveTodoData } from 'store/localStorage';
+import { loadTodoData, lodatTodoCount, saveTodoData } from 'store/localStorage';
 
 export const initialState: TodoState = {
   todoList: loadTodoData(),
+  todoCount: lodatTodoCount(),
 };
 
 const slice = createSlice({
@@ -14,6 +15,7 @@ const slice = createSlice({
     addTodo: {
       reducer: (state, action: PayloadAction<ITodoItem>) => {
         state.todoList.push(action.payload);
+        state.todoCount += 1;
         saveTodoData(state.todoList);
       },
       prepare: (content: string) => {
@@ -60,6 +62,7 @@ const slice = createSlice({
       const id = action.payload.id;
       const filteredTodos = state.todoList.filter(todo => todo.id !== id);
       state.todoList = filteredTodos;
+      state.todoCount -= 1;
       saveTodoData(state.todoList);
     },
   },

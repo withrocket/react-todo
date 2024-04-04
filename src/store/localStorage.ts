@@ -9,3 +9,11 @@ export const loadTodoData = (): ITodoItem[] => {
   }
   return [];
 };
+
+export const lodatTodoCount = (): number => {
+  const todoData = localStorage.getItem('todoData');
+  if (todoData) {
+    return JSON.parse(todoData).length;
+  }
+  return 0;
+};
