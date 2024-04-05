@@ -7,3 +7,8 @@ interface ITodoItem extends ITodoItemContent {
   completed: boolean;
   editing: boolean;
 }
+
+interface ITodoCategory {
+  name: string;
+  list: ITodoItem[];
+}

@@ -2,12 +2,16 @@ import * as React from 'react';
 import { Helmet } from 'react-helmet-async';
 import styled from 'styled-components';
 
-import TodoInput from 'app/components/TodoInput';
 import TodoItem from 'app/components/TodoItem';
 import { useTodoSlice } from 'store/todo';
 import { useDispatch, useSelector } from 'react-redux';
-import { TodoListSelector, TodoCountSelector } from 'store/todo/selector';
-import { useState } from 'react';
+import {
+  TodoListSelector,
+  TodoLastActionSelector,
+  TodoCountSelector,
+  TodoTitleSelector,
+} from 'store/todo/selector';
+import TheAppHeader from 'app/components/TheAppHeader';
 
 const Wrapper = styled.div`
   display: flex;
@@ -20,63 +24,68 @@ const Wrapper = styled.div`
 `;
 
 const Box = styled.div`
+  display: flex;
+  flex-direction: column;
   width: 400px;
   height: 600px;
   padding: 0px 0px 0px;
   background-color: #fff;
   box-shadow: 0px 25px 100px -60px rgba(0, 0, 0, 0.18);
   border-radius: 15px;
+  overflow: hidden;
 
   @media (max-width: 725px) {
     width: 100%;
     height: 100vh;
   }
-  & > div:nth-child(2) {
-    padding-left: 25px;
-    padding-right: 25px;
-    border-bottom: solid 1px #eee;
-  }
 `;
 
 const TodoList = styled.div`
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
+  padding: 25px 15px 50px;
+  overflow: auto;
   @media (max-width: 725px) {
     height: 1800px;
   }
+
+  & > div:not(:first-child) {
+    margin-top: 10px;
+  }
 `;
 
-const Header = styled.header`
-  position: relative;
-  height: 80px;
-  z-index: 50;
-`;
-
-const HeaderWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 80px;
-  padding: 15px 25px;
-  background-color: #fff;
-  transition: 0s;
-`;
-
-const Title = styled.h1`
+const TodoEmptyList = styled.div`
   flex: 1 1 auto;
-  margin: 0px;
-  padding: 0px;
-`;
-
-const Count = styled.span`
-  font-size: 2.1em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #999;
+  font-size: 2.2em;
 `;
 
 export function HomePage() {
   const { TodoActions } = useTodoSlice();
+  const title: string = useSelector(TodoTitleSelector);
+  const todoCount: number = useSelector(TodoCountSelector);
   const todoList = useSelector(TodoListSelector);
-  const todoCount = useSelector(TodoCountSelector);
+  const lastAction: string = useSelector(TodoLastActionSelector);
   const dispatch = useDispatch();
+
+  const handleClick = React.useCallback(
+    (e: any) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log('lastAction:', lastAction);
+      if (lastAction !== 'addCancel') {
+        dispatch(TodoActions.addTodo());
+      } else {
+        dispatch(TodoActions.setLastAction(''));
+      }
+    },
+    [lastAction],
+  );
 
   return (
     <>
@@ -86,39 +95,44 @@ export function HomePage() {
       </Helmet>
       <Wrapper>
         <Box>
-          <Header>
-            <HeaderWrapper>
-              <Title>할 일</Title>
-              <Count>{todoCount}</Count>
-            </HeaderWrapper>
-          </Header>
-
-          <TodoInput
-            addTodo={(content: string) =>
-              dispatch(TodoActions.addTodo(content))
-            }
-          ></TodoInput>
-          <TodoList>
-            {todoList.map(todo => (
-              <TodoItem
-                key={todo.id}
-                todo={todo}
-                checkTodo={() =>
-                  dispatch(TodoActions.checkTodo({ id: todo.id }))
-                }
-                editModeTodo={() =>
-                  dispatch(TodoActions.editModeTodo({ id: todo.id }))
-                }
-                editTodo={(content: string) =>
-                  dispatch(
-                    TodoActions.editTodo({ id: todo.id, content: content }),
-                  )
-                }
-                deleteTodo={() =>
-                  dispatch(TodoActions.deleteTodo({ id: todo.id }))
-                }
-              ></TodoItem>
-            ))}
+          <TheAppHeader
+            title={title}
+            todoCount={todoCount}
+            addTodo={() => {
+              dispatch(TodoActions.addTodo());
+            }}
+            clearTodoList={() => {
+              dispatch(TodoActions.clearTodoList());
+            }}
+          ></TheAppHeader>
+          <TodoList onClick={handleClick}>
+            {todoList.length > 0 ? (
+              todoList.map(todo => (
+                <TodoItem
+                  key={todo.id}
+                  todo={todo}
+                  addTodo={() => {
+                    dispatch(TodoActions.addTodo());
+                  }}
+                  checkTodo={() =>
+                    dispatch(TodoActions.checkTodo({ id: todo.id }))
+                  }
+                  editModeTodo={() =>
+                    dispatch(TodoActions.editModeTodo({ id: todo.id }))
+                  }
+                  editTodo={(content: string) =>
+                    dispatch(
+                      TodoActions.editTodo({ id: todo.id, content: content }),
+                    )
+                  }
+                  deleteTodo={() =>
+                    dispatch(TodoActions.deleteTodo({ id: todo.id }))
+                  }
+                ></TodoItem>
+              ))
+            ) : (
+              <TodoEmptyList>Empty</TodoEmptyList>
+            )}
           </TodoList>
         </Box>
       </Wrapper>

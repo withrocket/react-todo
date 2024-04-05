@@ -19,11 +19,13 @@ const Input = styled.input`
 `;
 
 export default function TodoInput({
+  onBlur,
   addTodo,
   isEditing,
   editContent,
   editTodo,
 }: {
+  onBlur: (content: string) => void;
   addTodo?: (content: string) => void;
   isEditing?: boolean;
   editContent?: string;
@@ -34,7 +36,7 @@ export default function TodoInput({
 
   useEffect(() => {
     inputRef.current?.focus();
-  }, [isEditing]);
+  }, []);
 
   return (
     <Box isEditing={isEditing}>
@@ -44,7 +46,7 @@ export default function TodoInput({
         onChange={e => setContent(e.target.value)}
         onBlur={e => {
           if (e.currentTarget === e.target) {
-            editTodo && editTodo(content);
+            onBlur(content);
           }
         }}
         onKeyPress={e => {
@@ -52,6 +54,7 @@ export default function TodoInput({
           if (e.key !== 'Enter') return;
           if (isEditing) {
             editTodo && editTodo(content);
+            addTodo && addTodo(content.trim());
           } else {
             addTodo && addTodo(content.trim());
             setContent('');
