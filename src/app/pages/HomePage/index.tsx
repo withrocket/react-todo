@@ -12,8 +12,9 @@ import {
   TodoTitleSelector,
 } from 'store/todo/selector';
 import TheAppHeader from 'app/components/TheAppHeader';
+import CircleButton from 'app/components/Button/CircleButton';
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ isFloating: boolean }>`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -21,6 +22,16 @@ const Wrapper = styled.div`
   width: 100%;
   height: 100vh;
   background-color: #eee;
+
+  & > .top-button {
+    position: fixed;
+    bottom: -60px;
+    left: 0px;
+    right: 0px;
+    margin: 0 auto;
+    transition: transform 0.3s ease-in-out;
+    transform: translate(0, ${props => (props.isFloating ? '-70px' : '0px')});
+  }
 `;
 
 const Box = styled.div`
@@ -40,7 +51,7 @@ const Box = styled.div`
   }
 `;
 
-const TodoList = styled.div`
+const TodoList = styled.div<{ ref?: any }>`
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
@@ -71,7 +82,10 @@ export function HomePage() {
   const todoCount: number = useSelector(TodoCountSelector);
   const todoList = useSelector(TodoListSelector);
   const lastAction: string = useSelector(TodoLastActionSelector);
+  const [isHeaderFloating, setIsHeaderFloating] = React.useState(false);
   const dispatch = useDispatch();
+
+  const listRef = React.useRef<HTMLDivElement>(null);
 
   const handleClick = React.useCallback(
     (e: any) => {
@@ -93,7 +107,7 @@ export function HomePage() {
         <title>Main</title>
         <meta name="description" content="Todo Main App" />
       </Helmet>
-      <Wrapper>
+      <Wrapper isFloating={isHeaderFloating}>
         <Box>
           <TheAppHeader
             title={title}
@@ -104,8 +118,15 @@ export function HomePage() {
             clearTodoList={() => {
               dispatch(TodoActions.clearTodoList());
             }}
+            isFloating={isHeaderFloating}
           ></TheAppHeader>
-          <TodoList onClick={handleClick}>
+          <TodoList
+            ref={listRef}
+            onClick={handleClick}
+            onScroll={(e: any) => {
+              setIsHeaderFloating(e.target.scrollTop);
+            }}
+          >
             {todoList.length > 0 ? (
               todoList.map(todo => (
                 <TodoItem
@@ -135,6 +156,22 @@ export function HomePage() {
             )}
           </TodoList>
         </Box>
+        <CircleButton
+          className="top-button"
+          onClick={() => {
+            listRef.current?.scrollTo(0, 0);
+          }}
+          Icon={() => (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="24"
+              viewBox="0 -960 960 960"
+              width="24"
+            >
+              <path d="M440-160v-487L216-423l-56-57 320-320 320 320-56 57-224-224v487h-80Z" />
+            </svg>
+          )}
+        ></CircleButton>
       </Wrapper>
     </>
   );

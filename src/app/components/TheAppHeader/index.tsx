@@ -2,12 +2,17 @@ import React from 'react';
 import styled from 'styled-components';
 import CircleButton from '../Button/CircleButton';
 
-const Container = styled.section`
-  flex: 0 0 100px;
+const Container = styled.section<{ isFloating: boolean }>`
+  flex: 0 0 110px;
+  position: relative;
   display: flex;
   flex-direction: column;
   padding: 0px;
   background-color: #fff;
+  transition: box-shadow 0.2s;
+  box-shadow: ${props =>
+    props.isFloating ? '0px 0px 25px rgba(0, 0, 0, 0.3)' : 'none'};
+  z-index: 50;
 `;
 
 const ActionBar = styled.div`
@@ -55,6 +60,7 @@ const Title = styled.h1`
 const Count = styled.span`
   flex: 1 0 30px;
   font-size: 2em;
+  font-weight: 700;
   text-align: right;
 `;
 
@@ -63,14 +69,16 @@ export default function TheAppHeader({
   todoCount,
   addTodo,
   clearTodoList,
+  isFloating,
 }: {
   title: string;
   todoCount: number;
   addTodo: () => void;
   clearTodoList: () => void;
+  isFloating: boolean;
 }) {
   return (
-    <Container>
+    <Container isFloating={isFloating}>
       <ActionBar>
         <CircleButton
           className="clear-button"
